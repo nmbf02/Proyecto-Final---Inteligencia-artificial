@@ -1,6 +1,3 @@
-# Proyecto final - Casino.
-# Esmeilin Batista (1200114) - Nathaly Berroa (1200297)
-
 import random
 import pygad
 
@@ -48,3 +45,8 @@ print(f"Ganancia del casino: {ganancia_casino}")
 print(f"Monto después de la ganancia del casino: {monto_proceso_jugada}")
 print(f"Monto con margen negativo: {monto_margen_negativo}")
 print(f"Monto con margen positivo: {monto_margen_positivo}")
+
+
+
+
+

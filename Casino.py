@@ -5,11 +5,28 @@ import random
 import pygad
 
 def generar_poblacion(num_jugadas):
+    """
+    Genera una población de números aleatorios de 3 a 4 dígitos.
+    """
     return [random.randint(100, 9999) for _ in range(num_jugadas)]
 
-def calcular_montos(poblacion, monto_apuestas):
-    montos_apostados = [random.randint(1, int(monto_apuestas)) for _ in range(len(poblacion))]
+def generar_montos_apostados(num_jugadas, monto_apuestas):
+    """
+    Genera los montos apostados de manera aleatoria como números enteros positivos,
+    asegurándose de que la suma de los montos sea igual al monto total de apuestas.
+    """
+    montos = [random.randint(1, int(monto_apuestas) - num_jugadas + 1) for _ in range(num_jugadas - 1)]
+    montos.append(int(monto_apuestas) - sum(montos))
     
+    # Eliminar valores negativos y ceros
+    montos = [monto for monto in montos if monto > 0]
+    
+    return montos
+
+def calcular_montos(montos_apostados, monto_apuestas):
+    """
+    Calcula diferentes montos relacionados con las apuestas en el casino.
+    """
     porcentaje_ganancia_casino = 0.2
     ganancia_casino = int(porcentaje_ganancia_casino * monto_apuestas)
     
@@ -21,30 +38,37 @@ def calcular_montos(poblacion, monto_apuestas):
     porcentaje_margen_positivo = 0.02
     monto_margen_positivo = int(monto_proceso_jugada + (monto_proceso_jugada * porcentaje_margen_positivo))
     
-    return montos_apostados, ganancia_casino, monto_proceso_jugada, monto_margen_negativo, monto_margen_positivo
+    return ganancia_casino, monto_proceso_jugada, monto_margen_negativo, monto_margen_positivo
 
-# Pantalla de bienvenida y preguntas de entrada
-print("Bienvenido a nuestro casino")
-num_jugadas = int(input("Ingrese la cantidad de jugadas a registrar: "))
-monto_apuestas = float(input("Ingrese el monto total de apuestas: "))
+def main():
+    """
+    Función principal que ejecuta el programa.
+    """
+    print("Bienvenido a nuestro casino")
+    
+    try:
+        num_jugadas = int(input("Ingrese la cantidad de jugadas a registrar: "))
+        monto_apuestas = float(input("Ingrese el monto total de apuestas: "))
+    except ValueError:
+        print("Por favor, ingrese valores numéricos válidos.")
+        return
+    
+    poblacion = generar_poblacion(num_jugadas)
+    montos_apostados = generar_montos_apostados(num_jugadas, monto_apuestas)
+    
+    while sum(montos_apostados) != monto_apuestas:
+        montos_apostados = generar_montos_apostados(num_jugadas, monto_apuestas)
 
-# Generación de la población de números
-poblacion = generar_poblacion(num_jugadas)
+    ganancia_casino, monto_proceso_jugada, monto_margen_negativo, monto_margen_positivo = calcular_montos(montos_apostados, monto_apuestas)
 
-# Cálculo de montos con funciones
-montos_apostados, ganancia_casino, monto_proceso_jugada, monto_margen_negativo, monto_margen_positivo = calcular_montos(poblacion, monto_apuestas)
+    # Mostrar resultados
+    print("\nNúmeros de la población:", poblacion)
+    print("Montos apostados:", montos_apostados)
+    print(f"Suma de Montos apostados: {sum(montos_apostados)}")
+    print(f"Ganancia del casino: {ganancia_casino}")
+    print(f"Monto después de la ganancia del casino: {monto_proceso_jugada}")
+    print(f"Monto con margen negativo: {monto_margen_negativo}")
+    print(f"Monto con margen positivo: {monto_margen_positivo}")
 
-# Ajuste para asegurar que la sumatoria de montos_apostados sea igual a monto_proceso_jugada
-ajuste = monto_proceso_jugada - sum(montos_apostados)
-if ajuste != 0:
-    # Distribuir el ajuste de forma equitativa entre los montos
-    ajuste_individual = ajuste // num_jugadas
-    montos_apostados = [monto + ajuste_individual for monto in montos_apostados]
-
-# Mostrar resultados
-print(f"\nNúmeros de la población: {poblacion}")
-print(f"Montos apostados: {montos_apostados}")
-print(f"Ganancia del casino: {ganancia_casino}")
-print(f"Monto después de la ganancia del casino: {monto_proceso_jugada}")
-print(f"Monto con margen negativo: {monto_margen_negativo}")
-print(f"Monto con margen positivo: {monto_margen_positivo}")
+if __name__ == "__main__":
+    main()
